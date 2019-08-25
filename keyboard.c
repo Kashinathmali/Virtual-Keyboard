@@ -1,130 +1,216 @@
 #include<iostream>
-#include<cstring>
 using namespace std;
 
 class keyboard
 {
 public:
-    int R,C,ptr_R,ptr_C,pos_R,pos_C,count;
+    int R,C,nxt_R,nxt_C=0,pos_R=0,pos_C,count,n;
     char key[50][50],message_letter;
     string message;
     keyboard();
     void accept();
-    void calculate();
+    int cal();
+    int A();
+    int B();
 };
 
-keyboard::keyboard()
+keyboard::keyboard()                    //consteructor
 {
-    ptr_R=0;
-    ptr_C=0;
-    count++;
+     count=1,n=1;
+    nxt_R=0;
+    nxt_C=0;
 }
 
-void keyboard::accept()
+void keyboard::accept()                                 //used to input
 {
-    cout<<"\n Enter No. of Rows = ";
+    cout<<"\n Enter No. of Rows = ";                    
     cin>>R;
-    cout<<"\n Enter No. of Columns = ";
+	if(R==0){terminate();}
+    cout<<"\n Enter No. of Columns = ";             
     cin>>C;
-    cout<<"\n Enter Layout of Keyboard : "<<"\n";
+    if(C==0){terminate();}
+    cout<<"\n Enter Layout of Keyboard : "<<"\n";      
     int i=0;
     while(i<R)
     {
         for(int j=0;j<C;j++)
         {
-            cin>>key[i][j];
+            cin>>key[i][j];               
         }
         i++;
     }
     cout<<"\n Enter Word to be type : ";
-    cin>>message;
-    message+='*';
+    cin>>message;                     
+    message+='*';               //Added to find enter key 
 }
-
-void keyboard::calculate()
+int keyboard::cal()
 {
-    for(int i=0;i<R;i++)
+     for(int i=pos_C;i<C;i++)                   //checks row or column from current position
     {
-        for(int j=0;j<C;j++)
+        for(int j=pos_R;j<R;j++)
         {
-            if(message_letter==key[i][j])
+            if(message_letter==key[j][i])              
             {
-                pos_R=i;
-                pos_C=j;
+                nxt_R=j;                
+                nxt_C=i; 
+               return 0;
             }
-        }
-    }
-    if(ptr_R<pos_R)
-    {
-        for(int i=0;ptr_R<pos_R;i++)
-        {
-            ptr_R++;
-            if(key[ptr_R-1][ptr_C]==key[ptr_R][ptr_C])
+            else                               //checks from start 
             {
+                  for(int i=0;i<C;i++)
+                 {
+                        for(int j=0;j<R;j++)
+                         {
+                                if(message_letter==key[j][i])              
+                                {
+                                        nxt_R=j;            
+                                        nxt_C=i;     
+                                }
+                        }
+                }
             }
-            else
-            {
-                count++;
-            }
-        }
-    }
-    else if(ptr_R>pos_R)
-    {
-        for(int i=0;ptr_R>pos_R;i++)
-        {
-            ptr_R--;
-            if(key[ptr_R+1][ptr_C]==key[ptr_R][ptr_C])
-            {
-            }
-            else
-            {
-                count++;
-            }
-        }
-    }
-    if(ptr_C<pos_C)
-    {
-        for(int i=0;ptr_C<pos_C;i++)
-        {
-            ptr_C++;
-            if(key[ptr_R][ptr_C-1]==key[ptr_R][ptr_C])
-            {
-            }
-            else
-            {
-                count++;
-            }
-        }
-    }
-    else if(ptr_C>pos_C)
-    {
-        for(int i=0;ptr_C>pos_C;i++)
-        {
-            ptr_C--;
-            if(key[ptr_R][ptr_C+1]==key[ptr_R][ptr_C])
-            {
-            }
-            else
-            {
-                count++;
-            }
-        }
-    }
-    if(message_letter==key[ptr_R][ptr_C])
-    {
-        count++;
-    }
+       }
+   }
 }
-
+int keyboard::A()                                       //Runs from row to column 
+{
+        if(pos_R<nxt_R)
+	    {
+	                while(pos_R!=nxt_R)
+	                {
+	                        pos_R++;
+	                        if(key[pos_R][pos_C]==key[pos_R-1][pos_C])
+	                        {
+	                                count--; 
+	                        }
+	                      count++;                     
+	                }
+	    }
+	    if(pos_R>nxt_R)
+	    {
+	                while(pos_R!=nxt_R)
+	                {
+	                        pos_R--;
+	                        if(key[pos_R][pos_C]==key[pos_R+1][pos_C])
+	                        {
+	                                count--;
+	                        }
+	                        count++;              
+	                }
+	    }
+        if(pos_C>nxt_C)
+	    {
+	                while(pos_C!=nxt_C)
+	                {
+	                        pos_C--; 
+	                        if(key[pos_R][pos_C]==key[pos_R][pos_C+1])
+	                        {
+	                                count--;
+	                        }
+	                        count++;
+	                }
+	    }
+	    if(pos_C<nxt_C)
+	    {
+	                while(pos_C!=nxt_C)
+	                {
+	                        pos_C++;
+	                        if(key[pos_R][pos_C]==key[pos_R][pos_C-1])
+	                        {
+	                                count--;
+	                        }
+	                        count++;                 
+	                }
+	    }
+	    if(key[pos_R][pos_C]==key[nxt_R][nxt_C])                    //increased count to select character
+	    {   
+	             count++;
+	    }return count;
+}
+int keyboard::B()                       //runs from coumn to row
+{
+        if(pos_C>nxt_C)
+        {
+                while(pos_C!=nxt_C)
+                {
+                        pos_C--; 
+                        if(key[pos_R][pos_C]==key[pos_R][pos_C+1])
+                        {
+                                count;
+                        }
+                        count++; 
+                }
+    }
+    if(pos_C<nxt_C)
+    {
+                while(pos_C!=nxt_C)
+                {
+                        pos_C++;
+                        if(key[pos_R][pos_C]==key[pos_R][pos_C-1])
+                        {
+                                count--; 
+                        }
+                        count++;          
+                }
+    }
+     if(pos_R<nxt_R)
+    {
+                while(pos_R!=nxt_R)
+                {
+                        pos_R++;
+                        if(key[pos_R][pos_C]==key[pos_R-1][pos_C])
+                        {
+                                count--; 
+                        }
+                      count++;                      
+                }
+    }
+    if(pos_R>nxt_R)
+    {
+                while(pos_R!=nxt_R)
+                {
+                        pos_R--;
+                        if(key[pos_R][pos_C]==key[pos_R+1][pos_C])
+                        {
+                                count--; 
+                        }
+                        count++; 
+                }
+    }
+    if(key[pos_R][pos_C]==key[nxt_R][nxt_C])                    //count increased to select character
+    {   
+             count++;
+    }return count;
+}
 int main()
 {
-    keyboard kb;
-    kb.accept();
-    for(int i=0;kb.message[i]!='*';i++)
+	int temp,fir,sec,p_R,p_C,n=1;
+    keyboard kb;                   
+    kb.accept();                       
+    for(int i=0;kb.message[i]!='\0';i++)
     {
-        kb.message_letter=kb.message[i];
-        kb.calculate();
+        kb.message_letter=kb.message[i];               
+                 kb.cal();
+                 if(kb.message_letter!=kb.key[kb.nxt_R][kb.nxt_C])
+                 {
+                        cout<<"\nGiven input character "<<kb.key[kb.nxt_R][kb.nxt_C]<<" is not present in keyboard layout.... \n\n";
+                        return 0;
+                 }
+                 temp=kb.count;
+                p_R=kb.pos_R;p_C=kb.pos_C;
+                fir=kb.A();
+                kb.count=temp;
+                kb.pos_R=p_R;kb.pos_C=p_C;
+                sec=kb.B();
+                kb.count=temp;
+                if(fir<=sec)
+                {
+                      kb.count=fir;
+                }
+                else
+                        kb.count=sec;
     }
-    cout<<kb.count;
+    kb.count--;                   //count decreased for enter 
+    cout<<"\nKeystrokes = "<<kb.count<<endl;
     return 0;
 }
